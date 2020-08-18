@@ -3,37 +3,38 @@ clc
 
 [allresultch2,~,~] = xlsread('C:\Users\Administrator\Desktop\allresultch-2.xlsx');
 new_data = data_resize(allresultch2,185,185);
-% b = [1,72,35,21,70,46,49,73,26,45,68,57,25,28,66,11,41,69];  % RFÌáÈ¡ÌØÕ÷£¨0.1²âÊÔ¼¯£©£º0.74368
-b = [1,2,12,14,17,58,77,46,8,7,10,4,42,18,61,70,15,75,40,56,73];  % Å·Ê½¾àÀë
+% å¦‚æœä¸éœ€è¦æå–ç‰¹å¾ï¼Œè¿™é‡Œå°±ä¸éœ€è¦å†ä½¿ç”¨b
+% b = [1,72,35,21,70,46,49,73,26,45,68,57,25,28,66,11,41,69];  % RFæå–ç‰¹å¾ï¼ˆ0.1æµ‹è¯•é›†ï¼‰ï¼š0.74368
+% b = [1,2,12,14,17,58,77,46,8,7,10,4,42,18,61,70,15,75,40,56,73];  % æ¬§å¼è·ç¦»
 
 originalglszm = new_data(:,b);
 Train = originalglszm(:,2:end);
 Test = originalglszm(:,1);
 [inputdata_col,inputdata_row] = size(Train);
-indices=crossvalind('Kfold',Train(1:inputdata_col,inputdata_row),5);  %½øĞĞËæ»ú·Ö°ü
+indices=crossvalind('Kfold',Train(1:inputdata_col,inputdata_row),5);  %è¿›è¡Œéšæœºåˆ†åŒ…
 meanaccuracy = zeros(1,5);
 
-for k=1:5  %½»²æÑéÖ¤k=5£¬5¸ö°üÂÖÁ÷×÷Îª²âÊÔ¼¯
-        test = (indices == k);   %»ñµÃtest¼¯ÔªËØÔÚÊı¾İ¼¯ÖĞ¶ÔÓ¦µÄµ¥Ôª±àºÅ
-        ktrain = ~test;  %train¼¯ÔªËØµÄ±àºÅÎª·ÇtestÔªËØµÄ±àºÅ
-        P_train=Train(ktrain,:);%´ÓÊı¾İ¼¯ÖĞ»®·Ö³ötrainÑù±¾µÄÊı¾İ
+for k=1:5  %äº¤å‰éªŒè¯k=5ï¼Œ5ä¸ªåŒ…è½®æµä½œä¸ºæµ‹è¯•é›†
+        test = (indices == k);   %è·å¾—testé›†å…ƒç´ åœ¨æ•°æ®é›†ä¸­å¯¹åº”çš„å•å…ƒç¼–å·
+        ktrain = ~test;  %trainé›†å…ƒç´ çš„ç¼–å·ä¸ºétestå…ƒç´ çš„ç¼–å·
+        P_train=Train(ktrain,:);%ä»æ•°æ®é›†ä¸­åˆ’åˆ†å‡ºtrainæ ·æœ¬çš„æ•°æ®
         T_train=Test(ktrain,:)';
-        P_test=Train(test,:);  %testÑù±¾¼¯
+        P_test=Train(test,:);  %testæ ·æœ¬é›†
         T_test=Test(test,:);
 
 
     % Training Forest
-    maxGiniImpurity = 0.5; % »ùÄá´¿¶È²»ÄÜÉèÖÃÌ«µÍ£¬²»È»»áÏİÈëÎŞÏŞÑ­»·
+    maxGiniImpurity = 0.5; % åŸºå°¼çº¯åº¦ä¸èƒ½è®¾ç½®å¤ªä½ï¼Œä¸ç„¶ä¼šé™·å…¥æ— é™å¾ªç¯
     numOfTree = 300;
     baggingSampleSize = 400;
-    numRandFeatures = floor(sqrt(size(originalglszm,2))); % floor(x) º¯ÊıÏòÏÂÈ¡Õû£»ceil(x) º¯ÊıÏòÉÏÈ¡Õû£»round(x) º¯ÊıÈ¡×î½Ó½üµÄÕûÊı
+    numRandFeatures = floor(sqrt(size(originalglszm,2))); % floor(x) å‡½æ•°å‘ä¸‹å–æ•´ï¼›ceil(x) å‡½æ•°å‘ä¸Šå–æ•´ï¼›round(x) å‡½æ•°å–æœ€æ¥è¿‘çš„æ•´æ•°
     train_data_split = false;
     
     L = trainForest(P_train, T_train, maxGiniImpurity, numOfTree, ...
     baggingSampleSize, numRandFeatures, train_data_split);
     disp('Forest is trained.')
     
-    % ²âÊÔ
+    % æµ‹è¯•
 %     p_test = P_test(3,:);
     outputlist = zeros(size(P_test,1),1);
     for key = 1:size(P_test,1)
@@ -51,20 +52,20 @@ for k=1:5  %½»²æÑéÖ¤k=5£¬5¸ö°üÂÖÁ÷×÷Îª²âÊÔ¼¯
         number_B_sim = length(find(outputlist == 0& T_test == 0));
         number_M_sim = length(find(outputlist == 1& T_test == 1));
         meanaccuracy(k) = length(find(T_test == outputlist))/length(T_test);
-        disp(['²¡Àı×ÜÊı£º' num2str(total_B + total_M) ...
-        '    Á¼ĞÔ£º' num2str(total_B) '    ¶ñĞÔ£º' num2str(total_M)]);
-        disp(['ÑµÁ·¼¯²¡Àı×ÜÊı£º' num2str(length(P_train)) '    Á¼ĞÔ£º' num2str(count_B) ...
-        '    ¶ñĞÔ£º' num2str(count_M)]);
-        disp(['²âÊÔ¼¯²¡Àı×ÜÊı£º' num2str(length(P_test)) '    Á¼ĞÔ£º' num2str(number_B) ...
-        '    ¶ñĞÔ£º' num2str(number_M)]);
-        disp(['Á¼ĞÔÈéÏÙÖ×ÁöÈ·Õï£º' num2str(number_B_sim) '    ÎóÕï£º' num2str(number_B - number_B_sim) ...
-        '    È·ÕïÂÊ£º' num2str(number_B_sim/number_B*100) '%']);
-        disp(['¶ñĞÔÈéÏÙÖ×ÁöÈ·Õï£º' num2str(number_M_sim) '    ÎóÕï£º' num2str(number_M - number_M_sim) ...
-        '    È·ÕïÂÊ£º' num2str(number_M_sim/number_M*100) '%']);
-        disp(['×Ü×¼È·ÂÊ:' num2str(length(find(T_test == outputlist))/length(T_test))]);
+        disp(['ç—…ä¾‹æ€»æ•°ï¼š' num2str(total_B + total_M) ...
+        '    è‰¯æ€§ï¼š' num2str(total_B) '    æ¶æ€§ï¼š' num2str(total_M)]);
+        disp(['è®­ç»ƒé›†ç—…ä¾‹æ€»æ•°ï¼š' num2str(length(P_train)) '    è‰¯æ€§ï¼š' num2str(count_B) ...
+        '    æ¶æ€§ï¼š' num2str(count_M)]);
+        disp(['æµ‹è¯•é›†ç—…ä¾‹æ€»æ•°ï¼š' num2str(length(P_test)) '    è‰¯æ€§ï¼š' num2str(number_B) ...
+        '    æ¶æ€§ï¼š' num2str(number_M)]);
+        disp(['è‰¯æ€§ä¹³è…ºè‚¿ç˜¤ç¡®è¯Šï¼š' num2str(number_B_sim) '    è¯¯è¯Šï¼š' num2str(number_B - number_B_sim) ...
+        '    ç¡®è¯Šç‡ï¼š' num2str(number_B_sim/number_B*100) '%']);
+        disp(['æ¶æ€§ä¹³è…ºè‚¿ç˜¤ç¡®è¯Šï¼š' num2str(number_M_sim) '    è¯¯è¯Šï¼š' num2str(number_M - number_M_sim) ...
+        '    ç¡®è¯Šç‡ï¼š' num2str(number_M_sim/number_M*100) '%']);
+        disp(['æ€»å‡†ç¡®ç‡:' num2str(length(find(T_test == outputlist))/length(T_test))]);
         
     
 %     totalmean(i) = mean(meanaccuracy);
 end
-disp(['ÎåÕÛ½»²æÑéÖ¤×¼È·ÂÊ·Ö±ğÎª£º ' num2str(meanaccuracy) ]);
-disp(['Æ½¾ù·ÖÀà×¼È·ÂÊÎª£º ' num2str(mean(meanaccuracy)) ]);
+disp(['äº”æŠ˜äº¤å‰éªŒè¯å‡†ç¡®ç‡åˆ†åˆ«ä¸ºï¼š ' num2str(meanaccuracy) ]);
+disp(['å¹³å‡åˆ†ç±»å‡†ç¡®ç‡ä¸ºï¼š ' num2str(mean(meanaccuracy)) ]);
