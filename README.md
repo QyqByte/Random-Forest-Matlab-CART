@@ -38,3 +38,5 @@
        T = testData(L,P_test(key,:));
        outputlist(key,1) = leafLabelDistri(T);
     end
+
+注：若想单纯的使用MATLAB-Random_Forest 随机森林算法，也可使用
