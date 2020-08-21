@@ -39,4 +39,5 @@
        outputlist(key,1) = leafLabelDistri(T);
     end
 
-注：若想单纯的使用MATLAB-Random_Forest 随机森林算法，也可使用
+注：若想单纯的使用MATLAB-Random_Forest 随机森林算法，也可使用科罗拉多大学博尔德分校Abhishek Jaiantilal 开发的randomforest-matlab开源工具箱
+，详见 https://github.com/Qiao-handsome/Random-Forest-MATLAB
