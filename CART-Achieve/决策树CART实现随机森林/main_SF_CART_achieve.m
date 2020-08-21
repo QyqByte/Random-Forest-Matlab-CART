@@ -26,7 +26,7 @@ for k=1:5  %交叉验证k=5，5个包轮流作为测试集
     % Training Forest
     maxGiniImpurity = 0.5; % 基尼纯度不能设置太低，不然会陷入无限循环
     numOfTree = 300;
-    baggingSampleSize = 400;
+    baggingSampleSize = 400; % 在总训练集中随机选取400个样本构建树
     numRandFeatures = floor(sqrt(size(originalglszm,2))); % floor(x) 函数向下取整；ceil(x) 函数向上取整；round(x) 函数取最接近的整数
     train_data_split = false;
     
